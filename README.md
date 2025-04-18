@@ -25,9 +25,9 @@ If you're missing `tkinter` (which is built-in on most systems), you can install
 
 ## 📸 Screenshot
 
-```markdown
-![UI Screenshot](https://github.com/BurningYolo/419i10712zahzi201/blob/main/UI.png)
-```
+
+![UI Screenshot](https://github.com/BurningYolo/419i10712zahzi201/raw/main/UI.png)
+
 
 ---
 
