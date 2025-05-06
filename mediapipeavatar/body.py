@@ -80,6 +80,11 @@ class BodyThread(threading.Thread):
         self.timeSinceCheckedConnection = 0
         self.timeSincePostStatistics = 0
 
+        #added part
+        self.prev_mid_hip_z = None
+        self.walking_speed = 2.0  # You can tweak this for sensitivity
+
+
     def run(self):
         mp_drawing = mp.solutions.drawing_utils
         mp_pose = mp.solutions.pose
@@ -129,6 +134,23 @@ class BodyThread(threading.Thread):
                 if results.pose_world_landmarks:
                     for i, landmark in enumerate(results.pose_world_landmarks.landmark):
                         self.data += f"{i}|{landmark.x}|{landmark.y}|{landmark.z}\n"
+                    
+                    # Replace the hip distance calculation with z-coordinate tracking
+                    left_hip = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP]
+                    right_hip = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_HIP]
+
+                    # Calculate the midpoint's z-coordinate
+                    mid_hip_z = (left_hip.z + right_hip.z) / 2
+
+                    if self.prev_mid_hip_z is not None:
+                        # Use the change in z-coordinate for forward movement
+                        # Change this line in BodyThread.run():
+                        delta_z = (mid_hip_z - self.prev_mid_hip_z) * 1000  # Flipped sign  # Negative because MediaPipe's z increases as you move away
+                        self.data += f"hip_z_delta|{delta_z}\n"
+
+                    self.prev_mid_hip_z = mid_hip_z
+                    
+
 
                 self.send_data(self.data)
 

@@ -1,5 +1,6 @@
 // REVIEWS
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -40,6 +41,16 @@ public class PipeServer : MonoBehaviour
     private Transform virtualNeck;
     private Transform virtualHip;
 
+    public Transform characterTransform;
+
+    private float smoothedDz = 0f;
+    public float smoothFactor = 0.1f; // adjust to control smoothness
+
+    float dz = 0f;
+    bool dzUpdated = false;
+    Quaternion prevRotation;
+    [SerializeField] float characterSpeed = 300f;
+
     public Transform GetLandmark(Landmark mark)
     {
         return body.instances[(int)mark].transform ;
@@ -61,12 +72,38 @@ public class PipeServer : MonoBehaviour
         virtualNeck = new GameObject("VirtualNeck").transform;
         virtualHip = new GameObject("VirtualHip").transform;
 
+        prevRotation = characterTransform.rotation;
+
         Thread t = new Thread(new ThreadStart(Run));
         t.Start();
+
     }
     private void Update()
     {
         UpdateBody(body);
+        Quaternion currentRotation = characterTransform.rotation;
+
+        if (prevRotation != currentRotation)
+        {
+            prevRotation = currentRotation;
+            //dz = Input.GetAxis("Vertical"); // W/S keys control dz directly
+
+            smoothedDz = Mathf.Lerp(smoothedDz, dz, smoothFactor);
+
+            Vector3 movement = characterTransform.forward * Mathf.Abs(smoothedDz) * characterSpeed * Time.deltaTime;
+
+            characterTransform.position += movement;
+
+            Debug.Log("Movement: " + movement);
+            dzUpdated = false;
+        }
+
+    }
+
+    private void resetDZ()
+    {
+        if (!dzUpdated)
+            dz = 0;
     }
 
     private void UpdateBody(Body b)
@@ -132,11 +169,15 @@ public class PipeServer : MonoBehaviour
                 {
                     len = (int)reader.ReadUInt32();
                     str = new string(reader.ReadChars(len));
+                    Debug.Log("Received message1: " + str);  // Log the message to check what is received
                 }
                 else
                 {
-                    if(server.HasMessage())
+                    if (server.HasMessage())
+                    {
                         str = server.GetMessage();
+                        Debug.Log("Received message2: " + str);  // Log the message to check what is received
+                    }
                     len = str.Length;
                 }
 
@@ -145,6 +186,33 @@ public class PipeServer : MonoBehaviour
                 {
                     if (string.IsNullOrWhiteSpace(l))
                         continue;
+
+                    if (l.StartsWith("hip_z_delta"))
+                    {
+                        Debug.Log("Received hip_z_delta: " + l);
+                        string[] parts = l.Split('|');
+                        if (float.TryParse(parts[1], out float deltaZ))
+                        {
+                            if (characterTransform != null)
+                            {
+                                Debug.Log("DeltaZ: " + deltaZ);
+                                dz = deltaZ;
+                                float deadZone = 0.002f;
+                                if (Mathf.Abs(dz) < deadZone)
+                                    dz = 0;
+                                else
+                                    dzUpdated = true;
+                                //dz = Mathf.Abs(dz);
+                                Debug.Log($"Received deltaZ: {deltaZ}"); // Existing
+                                Debug.Log($"Current dz: {dz}"); // Add this
+                            }
+                            else
+                            {
+                                Debug.LogWarning("characterTransform is null");
+                            }
+                        }
+                    }
+
                     string[] s = l.Split('|');
                     if (s.Length < 4) continue;
                     int i;
