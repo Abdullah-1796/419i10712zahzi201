@@ -168,8 +168,6 @@ public class Avatar : MonoBehaviour
                     displacement = displacement2;
                 }
             }
-            //transform.position = Vector3.Lerp(transform.position,initialPosition+ Vector3.up * displacement + Vector3.up * footGroundOffset,
-            //    Time.deltaTime*5f);
         }
 
         // Compute the new rotations for each limbs of the avatar using the calibration datas we created before.
@@ -209,29 +207,6 @@ public class Avatar : MonoBehaviour
 
         }
 
-        //if (Calibrated)
-        //{
-        //    // Track hip position changes
-        //Vector3 trackedHipPos = server.GetVirtualHip().position;
-        //Vector3 hipDelta = trackedHipPos - previousTrackedHipPosition;
-
-        //// Optionally scale the motion
-        //float moveScale = 1.0f; // Tune this value
-        //Vector3 moveVector = new Vector3(hipDelta.x, 0, hipDelta.z) * moveScale;
-
-        //transform.position += moveVector;
-
-        //previousTrackedHipPosition = trackedHipPos;
-        //}
-
-        // Add this at the end of Update():
-        if (Calibrated)
-        {
-            // Preserve calibrated animations BUT allow external movement
-            //transform.position = PipeServer.Instance.characterTransform.position;
-            //transform.rotation = PipeServer.Instance.characterTransform.rotation;
-        }
-
         // Apply movement from BOTH sources
         Vector3 trackedHipPos = server.GetVirtualHip().position;
         Vector3 hipDelta = trackedHipPos - previousTrackedHipPosition;
@@ -239,10 +214,6 @@ public class Avatar : MonoBehaviour
         transform.position += moveVector;
         previousTrackedHipPosition = trackedHipPos;
 
-        // Allow PipeServer movement to affect position
-        //transform.position = Vector3.Lerp(transform.position,
-        //    PipeServer.Instance.characterTransform.position,
-        //    Time.deltaTime * 5f);
 
     }
 

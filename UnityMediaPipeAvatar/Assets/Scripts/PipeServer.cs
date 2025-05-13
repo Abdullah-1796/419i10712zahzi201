@@ -27,7 +27,7 @@ public class PipeServer : MonoBehaviour
     public float landmarkScale = 1f;
     public float maxSpeed = 50f;
     public float debug_samplespersecond;
-    public int samplesForPose = 1;
+    public int samplesForPose = 3;
     public bool active;
 
     private NamedPipeServerStream serverNP;
@@ -50,6 +50,8 @@ public class PipeServer : MonoBehaviour
     bool dzUpdated = false;
     Quaternion prevRotation;
     [SerializeField] float characterSpeed = 300f;
+
+    public float smoothingFactor = 5f;
 
     public Transform GetLandmark(Landmark mark)
     {
@@ -94,7 +96,7 @@ public class PipeServer : MonoBehaviour
 
             characterTransform.position += movement;
 
-            Debug.Log("Movement: " + movement);
+            //aDebug.Log("Movement: " + movement);
             dzUpdated = false;
         }
 
@@ -121,7 +123,10 @@ public class PipeServer : MonoBehaviour
         for (int i = 0; i < LANDMARK_COUNT; ++i)
         {
             Vector3 p = b.localPositionTargets[i]-offset;
-            b.instances[i].transform.localPosition=Vector3.MoveTowards(b.instances[i].transform.localPosition, p, Time.deltaTime * maxSpeed);
+            /*b.instances[i].transform.localPosition=Vector3.MoveTowards(b.instances[i].transform.localPosition, p, Time.deltaTime * maxSpeed);*/
+
+            b.instances[i].transform.localPosition = Vector3.Lerp(b.instances[i].transform.localPosition, p, Time.deltaTime * smoothingFactor); // try 5–10
+
         }
 
         virtualNeck.transform.position = (b.instances[(int)Landmark.RIGHT_SHOULDER].transform.position + b.instances[(int)Landmark.LEFT_SHOULDER].transform.position) / 2f;
@@ -169,14 +174,14 @@ public class PipeServer : MonoBehaviour
                 {
                     len = (int)reader.ReadUInt32();
                     str = new string(reader.ReadChars(len));
-                    Debug.Log("Received message1: " + str);  // Log the message to check what is received
+                    //Debug.Log("Received message1: " + str);  // Log the message to check what is received
                 }
                 else
                 {
                     if (server.HasMessage())
                     {
                         str = server.GetMessage();
-                        Debug.Log("Received message2: " + str);  // Log the message to check what is received
+                        //Debug.Log("Received message2: " + str);  // Log the message to check what is received
                     }
                     len = str.Length;
                 }
@@ -189,13 +194,13 @@ public class PipeServer : MonoBehaviour
 
                     if (l.StartsWith("hip_z_delta"))
                     {
-                        Debug.Log("Received hip_z_delta: " + l);
+                        //Debug.Log("Received hip_z_delta: " + l);
                         string[] parts = l.Split('|');
                         if (float.TryParse(parts[1], out float deltaZ))
                         {
                             if (characterTransform != null)
                             {
-                                Debug.Log("DeltaZ: " + deltaZ);
+                                //Debug.Log("DeltaZ: " + deltaZ);
                                 dz = deltaZ;
                                 float deadZone = 0.002f;
                                 if (Mathf.Abs(dz) < deadZone)
@@ -203,12 +208,12 @@ public class PipeServer : MonoBehaviour
                                 else
                                     dzUpdated = true;
                                 //dz = Mathf.Abs(dz);
-                                Debug.Log($"Received deltaZ: {deltaZ}"); // Existing
-                                Debug.Log($"Current dz: {dz}"); // Add this
+                                //Debug.Log($"Received deltaZ: {deltaZ}"); // Existing
+                                //Debug.Log($"Current dz: {dz}"); // Add this
                             }
                             else
                             {
-                                Debug.LogWarning("characterTransform is null");
+                                //Debug.LogWarning("characterTransform is null");
                             }
                         }
                     }
