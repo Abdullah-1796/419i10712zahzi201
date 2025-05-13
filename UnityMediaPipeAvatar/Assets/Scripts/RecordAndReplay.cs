@@ -11,11 +11,14 @@ public class RecordAndReplay : MonoBehaviour
     private float interval = 0.016f;
     private float time = 0;
     private int index = 0;
+    [SerializeField] private GameObject pipeServer;
+    private PipeServer pipeServerScript;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         snapshots = new List<PlayerTransform[]>();
+        pipeServerScript = pipeServer.GetComponent<PipeServer>();
     }
 
     // Update is called once per frame
@@ -28,20 +31,20 @@ public class RecordAndReplay : MonoBehaviour
             Record();
         }
 
-        if(/*time >= interval &&*/ isReplaying)
+        if(isReplaying)
         {
             time = 0;
             Replay();
         }
 
-        if(Input.GetKeyDown(KeyCode.R))
+        if(!isRecording && pipeServerScript.dataReceiving && !isReplaying)
         {
             isRecording = true;
             isReplaying = false;
             snapshots.Clear();
             index = 0;
         }
-        else if(Input.GetKeyDown(KeyCode.P))
+        if(Input.GetKeyDown(KeyCode.P))
         {
             isReplaying = true;
             isRecording = false;
@@ -58,11 +61,10 @@ public class RecordAndReplay : MonoBehaviour
                 rb.isKinematic = true;
             }
 
-
             CharacterController cc = GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
         }
-        else if(Input.GetKeyDown(KeyCode.S))
+        if(isRecording && !pipeServerScript.dataReceiving && !isReplaying)
         {
             isRecording = false;
         }

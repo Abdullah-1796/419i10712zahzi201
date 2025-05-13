@@ -52,6 +52,8 @@ public class PipeServer : MonoBehaviour
     [SerializeField] float characterSpeed = 300f;
 
     public float smoothingFactor = 5f;
+    private int notAvailableCount = 1000;
+    [HideInInspector] public bool dataReceiving = false;
 
     public Transform GetLandmark(Landmark mark)
     {
@@ -98,8 +100,23 @@ public class PipeServer : MonoBehaviour
 
             //aDebug.Log("Movement: " + movement);
             dzUpdated = false;
+            notAvailableCount = 0;
+        }
+        else
+        {
+            notAvailableCount++;
         }
 
+        if(notAvailableCount > 100)
+        {
+            Debug.Log("Video Not Available");
+            dataReceiving = false;
+        }
+        else
+        {
+            Debug.Log("Video Available");
+            dataReceiving = true;
+        }
     }
 
     private void resetDZ()

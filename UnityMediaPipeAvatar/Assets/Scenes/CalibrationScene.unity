@@ -1548,6 +1548,7 @@ MonoBehaviour:
   - {fileID: 2013220141}
   - {fileID: 1880563524}
   - {fileID: 342876080}
+  pipeServer: {fileID: 1215122909}
 --- !u!1 &402418222 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100274, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
@@ -1930,7 +1931,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1055126577752158228, guid: 1eb6969b7ef8ed44a9a446e718710222, type: 3}
   m_PrefabInstance: {fileID: 1055126577386968138}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1215122909}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44d24d3dd190ce1489db2f91b5ab8db9, type: 3}
@@ -3531,7 +3532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_CullingMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_AnimatePhysics
@@ -5013,6 +5014,11 @@ MonoBehaviour:
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
   m_PrefabInstance: {fileID: 55473984}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1215122909 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1055126577752158231, guid: 1eb6969b7ef8ed44a9a446e718710222, type: 3}
+  m_PrefabInstance: {fileID: 1055126577386968138}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1232159305
 GameObject:
