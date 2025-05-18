@@ -10,6 +10,16 @@ using UnityEngine;
 
 /* Currently very messy because both the server code and hand-drawn code is all in the same file here.
  * But it is still fairly straightforward to use as a reference/base.
+ * 
+ *  Receives tracking data (UDP/Named Pipes) from an external source (Python/MediaPipe).
+
+    Updates 3D landmarks (joint positions) in Unity.
+
+    Computes virtual transforms (neck, hips) not provided by MediaPipe.
+
+    Moves the character based on hip_z_delta (forward/backward motion).
+
+    Visualizes landmarks & skeleton (using LineRenderer).
  */
 
 [DefaultExecutionOrder(-1)]

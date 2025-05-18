@@ -2,6 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Calibration: Stores reference poses for accurate tracking.
+
+Bone Alignment: Matches avatar bones to tracked landmarks.
+
+Ground Adjustment: Keeps feet planted on surfaces.
+
+Movement: Applies hip-based motion to the character.
+ */
 public class Avatar : MonoBehaviour
 {
     public Camera previewCamera; // OPTIONAL
