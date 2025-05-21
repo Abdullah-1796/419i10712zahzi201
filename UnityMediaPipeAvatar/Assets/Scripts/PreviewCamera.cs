@@ -16,9 +16,8 @@ public class PreviewCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         // The tracking of the camera.
-        if (previewCamera&&animator&&animator.isActiveAndEnabled)
+        if (previewCamera&&animator && animator.isActiveAndEnabled)
         {
             Quaternion q = Quaternion.LookRotation((animator.GetBoneTransform(HumanBodyBones.Chest).transform.position - previewCamera.transform.position).normalized, Vector3.up);
             previewCamera.transform.rotation = Quaternion.Lerp(previewCamera.transform.rotation, q, Time.deltaTime * 3f);
