@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +15,11 @@ public class RecordAndReplay : MonoBehaviour
     [SerializeField] private GameObject pipeServer;
     private PipeServer pipeServerScript;
 
+    [SerializeField] private TMP_Text messageText;
+    [SerializeField] private TMP_Text updateText;
+    private bool recorded = false;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,6 +30,7 @@ public class RecordAndReplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateUI();
         time += Time.deltaTime;
         if(time >= interval && isRecording)
         {
@@ -43,31 +50,20 @@ public class RecordAndReplay : MonoBehaviour
             isReplaying = false;
             snapshots.Clear();
             index = 0;
+            UpdateUI();
         }
         if(Input.GetKeyDown(KeyCode.P))
         {
-            isReplaying = true;
-            isRecording = false;
-
-            GetComponent<Avatar>().useCalibrationData = false;
-
-            foreach (Animator anim in GetComponentsInChildren<Animator>())
-            {
-                anim.enabled = false;
-            }
-
-            foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
-            {
-                rb.isKinematic = true;
-            }
-
-            CharacterController cc = GetComponent<CharacterController>();
-            if (cc != null) cc.enabled = false;
+            StartReplay();
+            UpdateUI();
         }
         if(isRecording && !pipeServerScript.dataReceiving && !isReplaying)
         {
             isRecording = false;
+            recorded = true;
+            UpdateUI();
         }
+
     }
 
     void Record()
@@ -94,6 +90,7 @@ public class RecordAndReplay : MonoBehaviour
     {
         if (GetComponent<Animator>().enabled)
             GetComponent<Animator>().enabled = false;
+
         if (snapshots.Count > index)
         {
             avatarParts[0].transform.position = snapshots[index][0].position;
@@ -110,8 +107,61 @@ public class RecordAndReplay : MonoBehaviour
             index = 0;
             isReplaying = false;
             GetComponent<Avatar>().useCalibrationData = true;
+            Time.timeScale = 1.0f;
         }
         Debug.Log("Replaying");
+    }
+
+    public void StartReplay()
+    {
+        if (recorded)
+        {
+            isReplaying = true;
+            isRecording = false;
+            recorded = false;
+
+            GetComponent<Avatar>().useCalibrationData = false;
+
+            foreach (Animator anim in GetComponentsInChildren<Animator>())
+            {
+                anim.enabled = false;
+            }
+
+            foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
+            {
+                rb.isKinematic = true;
+            }
+
+            CharacterController cc = GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            Time.timeScale = 0.7f;
+        }
+        else
+        {
+            messageText.text = "Clip not recorded!";
+            Invoke("ClearMessage", 2);
+        }
+    }
+
+    public void ClearMessage()
+    {
+        messageText.text = "";
+    }
+
+    private void UpdateUI()
+    {
+        if(isReplaying)
+        {
+            updateText.text = "Replaying Clip!";
+        }
+        else if(isRecording)
+        {
+            updateText.text = "Recording Clip!";
+        }
+        else if(recorded)
+        {
+            updateText.text = "Clip Recorded!";
+        }
     }
 
     struct PlayerTransform

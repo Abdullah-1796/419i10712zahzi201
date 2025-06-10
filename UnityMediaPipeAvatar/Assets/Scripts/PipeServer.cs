@@ -26,7 +26,7 @@ using UnityEngine;
 public class PipeServer : MonoBehaviour
 {
     public bool useLegacyPipes = false; // True to use NamedPipes for interprocess communication (not supported on Linux)
-    public string host = "127.0.0.1"; // This machines host.
+    public string host = "192.168.18.2"; // This machines host.
     public int port = 52733; // Must match the Python side.
     public Transform bodyParent;
     public GameObject landmarkPrefab;
@@ -64,6 +64,8 @@ public class PipeServer : MonoBehaviour
     public float smoothingFactor = 5f;
     private int notAvailableCount = 1000;
     [HideInInspector] public bool dataReceiving = false;
+
+
 
     public Transform GetLandmark(Landmark mark)
     {
